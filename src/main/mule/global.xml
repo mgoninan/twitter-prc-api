@@ -4,7 +4,7 @@
         <http:listener-connection host="0.0.0.0" port="${api.port}" protocol="HTTPS" tlsContext="apiTLSContext" />
     </http:listener-config>
     <http:request-config name="httpTwitterRequestConfiguration" doc:name="HTTP Request configuration" doc:id="1f3ad1c7-0768-4ed2-b8aa-f5eacea819a1">
-        <http:request-connection host="${https.twitter.host}" protocol="HTTPS"/>
+        <http:request-connection protocol="HTTPS" host="${https.twitter.host}"/>
     </http:request-config>
     <!-- 	<secure-properties:config name="securePropertiesConfig" doc:name="Secure Properties Config" doc:id="65d5b864-f6aa-4b38-8a23-83233d94380d" file="${env}-secure-properties.yaml" key="${encrypt.key}"/> -->
     <configuration-properties doc:name="Configuration properties" doc:id="250190a5-c965-4a7c-9800-96bf8545fe58" file="properties/properties.yaml" />

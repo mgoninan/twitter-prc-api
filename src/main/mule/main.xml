@@ -26,10 +26,18 @@ p('https.twitter.token')]]></ee:set-variable>
 				<ee:set-variable variableName="returnCount" ><![CDATA[%dw 2.0
 output application/json
 ---
-p('https.twitter.api.returnCount')]]></ee:set-variable>
+attributes.queryParams.count default p('https.twitter.api.maxCount')]]></ee:set-variable>
+				<ee:set-variable variableName="tweetList" ><![CDATA[%dw 2.0
+output application/json
+---
+[]]]></ee:set-variable>
+				<ee:set-variable variableName="urlList" ><![CDATA[%dw 2.0
+output application/java
+---
+[]]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
-		<http:request method="GET" doc:name="twitter search request" doc:id="07d522dc-ef9b-46a0-a0b0-522f448c79ed" url="${https.twitter.host}${https.twitter.searchPath}" outputMimeType="application/json">
+		<http:request method="GET" doc:name="twitter search request" doc:id="07d522dc-ef9b-46a0-a0b0-522f448c79ed" outputMimeType="application/json" config-ref="httpTwitterRequestConfiguration" path="${https.twitter.searchPath}">
 			<http:headers><![CDATA[#[output application/java
 ---
 {
@@ -38,31 +46,45 @@ p('https.twitter.api.returnCount')]]></ee:set-variable>
 			<http:query-params><![CDATA[#[output application/java
 ---
 {
+	"" : "",
 	"q" : vars.keyword,
-	"count" : vars.returnCount,
-	"result_type" : vars.resultType
+	"count" : vars.returnCount
 }]]]></http:query-params>
 		</http:request>
-		<ee:transform doc:name="Transform Message" doc:id="dd49b5c0-9f4a-4a06-b51d-d852ff3a73f3" >
+		<foreach doc:name="For Each" doc:id="2ce6f594-ab9b-4875-83d3-83e3cbf354c4" collection="payload[0]">
+			<ee:transform doc:name="Transform Message" doc:id="a6195bc9-c02a-44b9-8787-e9ac64d3d312">
+				<ee:message>
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="urlList" ><![CDATA[%dw 2.0
+output application/json
+---
+//(if(payload.entities.urls == [] )
+//    vars.urlList << payload.entities.media.url[0]
+//else if(payload.entities.media.url == null)
+//	vars.urlList
+//else
+//   vars.urlList << payload.entities.urls.url[0] ) 
+(if((payload.entities.urls == []) and (payload.entities.media.url == null)  )
+    vars.urlList << "no url available for this tweet" 
+else if((payload.entities.urls == []) and (payload.entities.media.url !=null) )
+    vars.urlList << payload.entities.media.url[0]
+else if((payload.entities.media.url == null) and (payload.entities.urls.url[0] != null) )
+    vars.urlList << payload.entities.urls.url[0]
+else
+    vars.urlList << "no url available for this tweet" )   ]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+		</foreach>
+		<ee:transform doc:name="Transform Message" doc:id="464bcb21-7ce8-4a49-9ad5-853c5a88beba" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
 ---
-{
-}]]></ee:set-payload>
+vars.urlList]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
-		<foreach doc:name="For Each" doc:id="2ce6f594-ab9b-4875-83d3-83e3cbf354c4" >
-			<ee:transform doc:name="Transform Message" doc:id="a6195bc9-c02a-44b9-8787-e9ac64d3d312" >
-				<ee:message >
-					<ee:set-payload ><![CDATA[%dw 2.0
-output application/java
----
-{
-}]]></ee:set-payload>
-				</ee:message>
-			</ee:transform>
-		</foreach>
+		<set-payload value="#[payload]" doc:name="Set Payload" doc:id="c75653cf-4b35-4c3f-9e70-8bc339223920" />
 		<logger level="INFO" doc:name="Logger" doc:id="f4ce0f29-d3ef-4c3a-9a30-a7e07cb6a170" />
 	</flow>
 	<flow name="retrieve-hashtags-by-populatiry" doc:id="442f6a0f-effb-42c3-a78e-f89c1914a3b3" >
@@ -100,7 +122,7 @@ output application/java
 0]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
-		<http:request method="GET" doc:name="twitter search request" doc:id="a4a93852-5c1e-4df4-a3bc-534d64a9630d" outputMimeType="application/json" url="${https.twitter.host}${https.twitter.searchPath}">
+		<http:request method="GET" doc:name="twitter search request" doc:id="a4a93852-5c1e-4df4-a3bc-534d64a9630d" outputMimeType="application/json" config-ref="httpTwitterRequestConfiguration" path="${https.twitter.searchPath}">
 			<http:headers ><![CDATA[#[output application/java
 ---
 {
