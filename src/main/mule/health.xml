@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+	<flow name="api-alive" doc:id="7c7435ee-fd8c-4a12-9f9e-6295b876be3c" >
+<!--     <http:listener doc:name="Listener" doc:id="e394a7c6-253c-4347-a2b2-23b90cbc7505" config-ref="apiHttpListenerConfig" path="/alive"/> -->
+    <set-payload value='#["UP"]' doc:name="Set Payload" doc:id="5a6da438-aa91-482a-abc1-f077f2e7b1a6" />
+  </flow>
+  <flow name="api-ready" doc:id="a270a421-5010-4bb0-9b7b-ac05f30c2dee" >
+<!--     <http:listener doc:name="Listener" doc:id="864aefbd-e0bf-44e2-8256-c05b2b6ad0b0" config-ref="apiHttpListenerConfig" path="/ready"/> -->
+    <flow-ref doc:name="check-all-dependencies-are-alive" doc:id="36ca080f-a888-4d12-8cea-5f1fbc136cf0" name="check-all-dependencies-are-alive"/>
+    <set-payload value='#["UP"]' doc:name="Set Payload" doc:id="0b39f9d5-3475-442f-a88e-e8c1c617a9ad" />
+  </flow>
+	<sub-flow name="check-all-dependencies-are-alive" doc:id="cd5c15c2-1db9-425a-9964-8c535ebcbd1d">
+    <logger level="INFO" doc:name="Logger" doc:id="c867babf-dd65-4f76-bb52-34d104150b51" />
+  </sub-flow>
+</mule>

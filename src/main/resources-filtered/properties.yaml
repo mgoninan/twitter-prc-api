@@ -1,0 +1,24 @@
+api:
+  groupId: "${api.groupId}"
+  artifactId: "${api.artifactId}"
+  version: "${api.version}"
+  #spec: "resource::${api.groupId}:${api.artifactId}:${api.version}:oas:zip:api.json"
+  majorVersion: "v1"
+  port: "8082"
+  
+app:
+  name: "${project.artifactId}"
+  version: "${project.version}"
+  
+https:
+  twitter:
+    port: "443"
+    host: "api.twitter.com/1.1/"
+    basePath: ""
+    searchPath: "search/tweets.json"
+    token: "bearer AAAAAAAAAAAAAAAAAAAAAI4OHgEAAAAAlbk0HSIAqcc3havrrU9j2NeAQ34%3DzJmzwHuQerd8JJ2TeuHfqwKgBt6bK4tk93w3ocBB2vPuKMF3cG"
+    api:
+      returnCount: "10"
+      keyword: "apples"
+      numHours: "5"
+      resultType: "popular"

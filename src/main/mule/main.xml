@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="retrieve-list-by-keyword" doc:id="95dcc18a-a663-4dd8-a92f-0c632c6f6737" >
+		<logger level="INFO" doc:name="Logger" doc:id="85bed9d8-f903-4a71-91ff-ff8e63b40864" />
+		<ee:transform doc:name="set queryparams to vars" doc:id="e488ec6c-78b9-461e-a893-4a9a25e07fc2" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="keyword" ><![CDATA[%dw 2.0
+output application/json
+---
+attributes.queryParams.keyword]]></ee:set-variable>
+				<ee:set-variable variableName="numHours" ><![CDATA[%dw 2.0
+output application/json
+---
+attributes.queryParams.numHours]]></ee:set-variable>
+				<ee:set-variable variableName="token" ><![CDATA[%dw 2.0
+output application/json
+---
+p('https.twitter.token')]]></ee:set-variable>
+				<ee:set-variable variableName="returnCount" ><![CDATA[%dw 2.0
+output application/json
+---
+p('https.twitter.api.returnCount')]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<http:request method="GET" doc:name="twitter search request" doc:id="07d522dc-ef9b-46a0-a0b0-522f448c79ed" url="${https.twitter.host}${https.twitter.searchPath}" outputMimeType="application/json">
+			<http:headers><![CDATA[#[output application/java
+---
+{
+	"Authorization" : vars.token
+}]]]></http:headers>
+			<http:query-params><![CDATA[#[output application/java
+---
+{
+	"q" : vars.keyword,
+	"count" : vars.returnCount,
+	"result_type" : vars.resultType
+}]]]></http:query-params>
+		</http:request>
+		<ee:transform doc:name="Transform Message" doc:id="dd49b5c0-9f4a-4a06-b51d-d852ff3a73f3" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<foreach doc:name="For Each" doc:id="2ce6f594-ab9b-4875-83d3-83e3cbf354c4" >
+			<ee:transform doc:name="Transform Message" doc:id="a6195bc9-c02a-44b9-8787-e9ac64d3d312" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</foreach>
+		<logger level="INFO" doc:name="Logger" doc:id="f4ce0f29-d3ef-4c3a-9a30-a7e07cb6a170" />
+	</flow>
+	<flow name="retrieve-hashtags-by-populatiry" doc:id="442f6a0f-effb-42c3-a78e-f89c1914a3b3" >
+		<logger level="INFO" doc:name="Logger" doc:id="e227f1d2-6ca7-4ca9-bf7b-92b6d1f09fb1" />
+		<ee:transform doc:name="set queryparams to vars" doc:id="e7720838-c345-48cc-8b7d-9085c2e3d5e8">
+			<ee:message />
+			<ee:variables>
+				<ee:set-variable variableName="keyword"><![CDATA[%dw 2.0
+output application/json
+---
+attributes.queryParams.keyword]]></ee:set-variable>
+				<ee:set-variable variableName="token" ><![CDATA[%dw 2.0
+output application/json
+---
+p('https.twitter.token')]]></ee:set-variable>
+				<ee:set-variable variableName="resultType" ><![CDATA[%dw 2.0
+output application/json
+---
+p('https.twitter.api.resultType')]]></ee:set-variable>
+				<ee:set-variable variableName="returnCount" ><![CDATA[%dw 2.0
+output application/json
+---
+p('https.twitter.api.returnCount')]]></ee:set-variable>
+				<ee:set-variable variableName="hashtagList" ><![CDATA[%dw 2.0
+output application/json
+---
+[]]]></ee:set-variable>
+				<ee:set-variable variableName="countX" ><![CDATA[%dw 2.0
+output application/java
+---
+0]]></ee:set-variable>
+				<ee:set-variable variableName="countY" ><![CDATA[%dw 2.0
+output application/java
+---
+0]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<http:request method="GET" doc:name="twitter search request" doc:id="a4a93852-5c1e-4df4-a3bc-534d64a9630d" outputMimeType="application/json" url="${https.twitter.host}${https.twitter.searchPath}">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"Authorization" : vars.token
+}]]]></http:headers>
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"q" : vars.keyword,
+	"count" : vars.returnCount,
+	"result_type" : vars.resultType
+}]]]></http:query-params>
+		</http:request>
+		<foreach doc:name="For Each" doc:id="50a4a67e-49d0-4635-bb67-de2ea8f5745b" collection="payload[0]">
+			<foreach doc:name="For Each" doc:id="8403d6b5-2e3c-4aa0-83fd-58823fa139a6" collection="payload.entities.hashtags">
+				<ee:transform doc:name="add hashtag to list" doc:id="bbf83721-322d-45cd-9c58-cd5144149233">
+			<ee:message>
+			</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="hashtagList" ><![CDATA[%dw 2.0
+output application/json
+---
+(if(payload.text == null)
+    vars.hashtagList
+else 
+    vars.hashtagList << payload.text )]]></ee:set-variable>
+					</ee:variables>
+		</ee:transform>
+			</foreach>
+		</foreach>
+		<ee:transform doc:name="remove duplicate hashtags" doc:id="f6e070f3-2e8b-423b-abb0-7620867a918c">
+			<ee:message>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="hashtagList" ><![CDATA[%dw 2.0
+output application/json
+---
+vars.hashtagList distinctBy (value) -> { "unique" : value }]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<set-payload value="#[vars.hashtagList]" doc:name="Set Payload" doc:id="890aa166-f32b-48ce-a031-6d068be4e943" />
+		<logger level="INFO" doc:name="Logger" doc:id="8b7e2f7a-9dee-462e-9edc-ffd4c75e413b" />
+	</flow>
+</mule>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties" xmlns:tls="http://www.mulesoft.org/schema/mule/tls" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation=" http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd  http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd">
+    <http:listener-config name="apiHttpListenerConfig">
+        <http:listener-connection host="0.0.0.0" port="${api.port}" protocol="HTTPS" tlsContext="apiTLSContext" />
+    </http:listener-config>
+    <http:request-config name="httpTwitterRequestConfiguration" doc:name="HTTP Request configuration" doc:id="1f3ad1c7-0768-4ed2-b8aa-f5eacea819a1">
+        <http:request-connection host="${https.twitter.host}" protocol="HTTPS"/>
+    </http:request-config>
+    <!-- 	<secure-properties:config name="securePropertiesConfig" doc:name="Secure Properties Config" doc:id="65d5b864-f6aa-4b38-8a23-83233d94380d" file="${env}-secure-properties.yaml" key="${encrypt.key}"/> -->
+    <configuration-properties doc:name="Configuration properties" doc:id="250190a5-c965-4a7c-9800-96bf8545fe58" file="properties/properties.yaml" />
+    <configuration-properties doc:name="Configuration properties" doc:id="849636a7-04ce-45da-82ae-a58fdf8cb9e3" file="properties/${env}-properties.yaml" />
+    <global-property doc:name="Global Property" doc:id="db486c7e-c751-4277-a07d-6f582bd82f43" name="env" value="dev" />
+    <tls:context name="apiTLSContext" doc:name="TLS Context" doc:id="e81fea3c-250b-42b1-a934-89386daae437">
+        <tls:key-store type="${tls.keystore.type}" path="${tls.keystore.path}" alias="${tls.keystore.alias}" keyPassword="${secure::tls.keystore.keyPassword}" password="${secure::tls.keystore.password}" />
+    </tls:context>
+    <secure-properties:config name="securePropertiesConfig" doc:name="Secure Properties Config" doc:id="2f95aaab-e9cb-4cd7-b0d4-b201ebf78e89" file="properties/${env}-secure-properties.yaml" key="${encrypt.key}">
+        <secure-properties:encrypt algorithm="Blowfish" />
+    </secure-properties:config>
+    <apikit:config name="apiConfig" api="twitter-prc-api.raml" outboundHeadersMapName="outboundHeadersMapName" httpStatusVarName="httpStatus" />
+</mule>

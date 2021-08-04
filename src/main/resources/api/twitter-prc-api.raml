@@ -1,0 +1,48 @@
+#%RAML 1.0
+title: twitter-prc-api
+mediaType: application/json
+description: This API integrates with Twitter's API and is capable of performing some analysis on recent tweets
+
+protocols:
+  - HTTPS
+
+securitySchemes:
+  SecurityScheme:
+    type: OAuth 2.0
+  SecurityScheme-1:
+    type: Basic Authentication
+      
+/retrieveList:
+  description: retrieves a list of tweets (max 10) that contain a key word in the last n hours
+  get:
+    body:
+        application/json:
+          example: {}
+    queryParameters:
+      keyword:
+        example: Example
+        type: string
+      numHours:
+        example: 2
+        type: number
+    responses:
+      200: 
+        body:
+          applications/json:
+            example: {}
+
+/retrieveHashtags:
+  description: retrieves a list of hastags used in the top 10 most popular tweets containing a keyword
+  get:
+    body:
+        application/json:
+          example: {}
+    queryParameters:
+      keyword:
+        example: Example
+        type: string
+    responses:
+      200: 
+        body:
+          applications/json:
+            example: {}
