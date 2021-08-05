@@ -103,7 +103,7 @@ vars.screennameList << payload.user.screen_name]]></ee:set-variable>
 					<ee:set-variable variableName="tweetList" ><![CDATA[%dw 2.0
 output application/json
 ---
-vars.tweetList << {text: vars.textList[vars.counter - 1], url: vars.urlList[vars.counter - 1], screename: vars.screennameList[vars.counter - 1]}]]></ee:set-variable>
+vars.tweetList << {text: vars.textList[vars.counter - 1], url: vars.urlList[vars.counter - 1], screen_name: vars.screennameList[vars.counter - 1]}]]></ee:set-variable>
 				</ee:variables>
 			</ee:transform>
 		</foreach>

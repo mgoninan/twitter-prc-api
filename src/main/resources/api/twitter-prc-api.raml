@@ -15,9 +15,6 @@ securitySchemes:
 /retrieveList:
   description: retrieves a list of tweets (max 10) that contain a key word in the last n hours
   get:
-    body:
-        application/json:
-          example: {}
     queryParameters:
       keyword:
         example: Example
@@ -25,6 +22,21 @@ securitySchemes:
       numHours:
         example: 2
         type: number
+      count:
+        example: 10
+        type: number
+        enum:
+          - 0
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
+          - 6
+          - 7
+          - 8
+          - 9
+          - 10
     responses:
       200: 
         body:
@@ -34,9 +46,6 @@ securitySchemes:
 /retrieveHashtags:
   description: retrieves a list of hastags used in the top 10 most popular tweets containing a keyword
   get:
-    body:
-        application/json:
-          example: {}
     queryParameters:
       keyword:
         example: Example
