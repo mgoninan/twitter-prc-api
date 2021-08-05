@@ -35,6 +35,14 @@ output application/json
 output application/java
 ---
 []]]></ee:set-variable>
+				<ee:set-variable variableName="textList" ><![CDATA[%dw 2.0
+output application/json
+---
+[]]]></ee:set-variable>
+				<ee:set-variable variableName="screennameList" ><![CDATA[%dw 2.0
+output application/json
+---
+[]]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
 		<http:request method="GET" doc:name="twitter search request" doc:id="07d522dc-ef9b-46a0-a0b0-522f448c79ed" outputMimeType="application/json" config-ref="httpTwitterRequestConfiguration" path="${https.twitter.searchPath}">
@@ -51,8 +59,9 @@ output application/java
 	"count" : vars.returnCount
 }]]]></http:query-params>
 		</http:request>
-		<foreach doc:name="For Each" doc:id="2ce6f594-ab9b-4875-83d3-83e3cbf354c4" collection="payload[0]">
-			<ee:transform doc:name="Transform Message" doc:id="a6195bc9-c02a-44b9-8787-e9ac64d3d312">
+		<set-variable value="#[payload]" doc:name="capture original search payload" doc:id="3b6a6f79-7817-4e5a-abbb-1509402cb780" variableName="tweetInfoList"/>
+		<foreach doc:name="For Each" doc:id="2ce6f594-ab9b-4875-83d3-83e3cbf354c4" collection="#[payload[0]]">
+			<ee:transform doc:name="capture tweet info" doc:id="a6195bc9-c02a-44b9-8787-e9ac64d3d312">
 				<ee:message>
 				</ee:message>
 				<ee:variables >
@@ -65,26 +74,40 @@ output application/json
 //	vars.urlList
 //else
 //   vars.urlList << payload.entities.urls.url[0] ) 
-(if((payload.entities.urls == []) and (payload.entities.media.url == null)  )
-    vars.urlList << "no url available for this tweet" 
+(if((payload.entities.urls == []) and (payload.entities.media.url == null) and (payload.retweeted_status.entities.urls.url[0] !=null) )
+    vars.urlList << payload.retweeted_status.entities.urls.url[0] 
 else if((payload.entities.urls == []) and (payload.entities.media.url !=null) )
     vars.urlList << payload.entities.media.url[0]
 else if((payload.entities.media.url == null) and (payload.entities.urls.url[0] != null) )
     vars.urlList << payload.entities.urls.url[0]
+else if((payload.entities.media.url != null) and (payload.entities.urls.url[0] != null) )
+    vars.urlList << payload.entities.urls.url[0]
 else
     vars.urlList << "no url available for this tweet" )   ]]></ee:set-variable>
+					<ee:set-variable variableName="textList" ><![CDATA[%dw 2.0
+output application/json
+---
+vars.textList << payload.text]]></ee:set-variable>
+					<ee:set-variable variableName="screennameList" ><![CDATA[%dw 2.0
+output application/json
+---
+vars.screennameList << payload.user.screen_name]]></ee:set-variable>
 				</ee:variables>
 			</ee:transform>
 		</foreach>
-		<ee:transform doc:name="Transform Message" doc:id="464bcb21-7ce8-4a49-9ad5-853c5a88beba" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
+		<foreach doc:name="For Each" doc:id="a3702ac8-6aae-4d42-801f-6333c458deda" collection="#[vars.textList]">
+			<ee:transform doc:name="create array of objects" doc:id="52d8340d-8ec6-4844-8f81-b45a0bce8758" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="tweetList" ><![CDATA[%dw 2.0
 output application/json
 ---
-vars.urlList]]></ee:set-payload>
-			</ee:message>
-		</ee:transform>
-		<set-payload value="#[payload]" doc:name="Set Payload" doc:id="c75653cf-4b35-4c3f-9e70-8bc339223920" />
+vars.tweetList << {text: vars.textList[vars.counter - 1], url: vars.urlList[vars.counter - 1], screename: vars.screennameList[vars.counter - 1]}]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+		</foreach>
+		<set-payload value="#[vars.tweetList]" doc:name="vars.tweetList" doc:id="c75653cf-4b35-4c3f-9e70-8bc339223920" />
 		<logger level="INFO" doc:name="Logger" doc:id="f4ce0f29-d3ef-4c3a-9a30-a7e07cb6a170" />
 	</flow>
 	<flow name="retrieve-hashtags-by-populatiry" doc:id="442f6a0f-effb-42c3-a78e-f89c1914a3b3" >
@@ -163,7 +186,7 @@ output application/json
 vars.hashtagList distinctBy (value) -> { "unique" : value }]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
-		<set-payload value="#[vars.hashtagList]" doc:name="Set Payload" doc:id="890aa166-f32b-48ce-a031-6d068be4e943" />
+		<set-payload value="#[vars.hashtagList]" doc:name="vars.hashtagList" doc:id="890aa166-f32b-48ce-a031-6d068be4e943" />
 		<logger level="INFO" doc:name="Logger" doc:id="8b7e2f7a-9dee-462e-9edc-ffd4c75e413b" />
 	</flow>
 </mule>
