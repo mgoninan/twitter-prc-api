@@ -2,7 +2,6 @@ api:
   groupId: "${api.groupId}"
   artifactId: "${api.artifactId}"
   version: "${api.version}"
-  spec: "resource::${api.groupId}:${api.artifactId}:${api.version}:oas:zip:api.json"
   majorVersion: "v1"
   port: "8082"
   
@@ -13,7 +12,6 @@ app:
 https:
   twitter:
     port: "443"
-    https: "https://"
     host: "api.twitter.com"
     basePath: "/"
     searchPath: "/1.1/search/tweets.json"

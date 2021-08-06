@@ -7,7 +7,7 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
 	<flow name="retrieve-list-by-keyword" doc:id="95dcc18a-a663-4dd8-a92f-0c632c6f6737" >
 		<logger level="INFO" doc:name="Logger" doc:id="85bed9d8-f903-4a71-91ff-ff8e63b40864" />
-		<ee:transform doc:name="set queryparams to vars" doc:id="e488ec6c-78b9-461e-a893-4a9a25e07fc2" >
+		<ee:transform doc:name="store queryparams and initialize api vars" doc:id="e488ec6c-78b9-461e-a893-4a9a25e07fc2" >
 			<ee:message >
 			</ee:message>
 			<ee:variables >
@@ -18,7 +18,7 @@ attributes.queryParams.keyword]]></ee:set-variable>
 				<ee:set-variable variableName="numHours" ><![CDATA[%dw 2.0
 output application/json
 ---
-attributes.queryParams.numHours]]></ee:set-variable>
+attributes.queryParams.numHours as Number]]></ee:set-variable>
 				<ee:set-variable variableName="token" ><![CDATA[%dw 2.0
 output application/json
 ---
@@ -66,11 +66,11 @@ output application/json
 			<http:query-params><![CDATA[#[output application/java
 ---
 {
-	"" : "",
 	"q" : vars.keyword,
 	"count" : vars.returnCount
 }]]]></http:query-params>
 		</http:request>
+		<logger level="INFO" doc:name="Logger" doc:id="2a3e2496-8800-4595-8513-6a3a3552d2cf" />
 		<set-variable value="#[payload]" doc:name="capture original search payload" doc:id="3b6a6f79-7817-4e5a-abbb-1509402cb780" variableName="tweetInfoList"/>
 		<foreach doc:name="For Each" doc:id="2ce6f594-ab9b-4875-83d3-83e3cbf354c4" collection="#[payload[0]]">
 			<ee:transform doc:name="capture tweet info" doc:id="a6195bc9-c02a-44b9-8787-e9ac64d3d312">
@@ -80,12 +80,6 @@ output application/json
 					<ee:set-variable variableName="urlList" ><![CDATA[%dw 2.0
 output application/json
 ---
-//(if(payload.entities.urls == [] )
-//    vars.urlList << payload.entities.media.url[0]
-//else if(payload.entities.media.url == null)
-//	vars.urlList
-//else
-//   vars.urlList << payload.entities.urls.url[0] ) 
 (if((payload.entities.urls == []) and (payload.entities.media.url == null) and (payload.retweeted_status.entities.urls.url[0] !=null) )
     vars.urlList << payload.retweeted_status.entities.urls.url[0] 
 else if((payload.entities.urls == []) and (payload.entities.media.url !=null) )
@@ -111,45 +105,108 @@ vars.createdAtList << payload.created_at]]></ee:set-variable>
 				</ee:variables>
 			</ee:transform>
 		</foreach>
+		<logger level="INFO" doc:name="Logger" doc:id="1cd4c91e-3a2f-4ae7-92e6-d05a1febb727" />
 		<foreach doc:name="For Each" doc:id="a3702ac8-6aae-4d42-801f-6333c458deda" collection="#[vars.textList]">
-			<ee:transform doc:name="Transform Message" doc:id="c8c7caa7-70cb-4706-adb6-e8ecd81b61af" >
-				<ee:message >
+			<flow-ref doc:name="date-time-calculation" doc:id="c3a93fd8-089d-432a-9e19-18a1fec28e55" name="date-time-calculation"/>
+		</foreach>
+		<set-payload value="#[vars.tweetList]" doc:name="vars.tweetList" doc:id="c75653cf-4b35-4c3f-9e70-8bc339223920" />
+		<logger level="INFO" doc:name="Logger" doc:id="f4ce0f29-d3ef-4c3a-9a30-a7e07cb6a170" />
+	</flow>
+	<flow name="date-time-calculation" doc:id="fe729347-5c3e-46e0-92e8-0aa6f9593655" >
+		<ee:transform doc:name="day and year Bool var" doc:id="c8c7caa7-70cb-4706-adb6-e8ecd81b61af">
+				<ee:message>
 				</ee:message>
-				<ee:variables >
-					<ee:set-variable variableName="month" ><![CDATA[%dw 2.0
+				<ee:variables>
+					<ee:set-variable variableName="month"><![CDATA[%dw 2.0
 output application/json
 ---
 (if(vars.createdAtList[vars.counter -1][4 to 6] == 'Jan')
-    vars.month ++ '01'
+    '01'
 else if((vars.createdAtList[vars.counter -1][4 to 6] == 'Feb'))
-    vars.month ++ '02'
+    '02'
 else if((vars.createdAtList[vars.counter -1][4 to 6] == 'Mar'))
-    vars.month ++ '03'
+    '03'
 else if((vars.createdAtList[vars.counter -1][4 to 6] == 'Apr'))
-    vars.month ++ '04'
+    '04'
 else if((vars.createdAtList[vars.counter -1][4 to 6] == 'May'))
-    vars.month ++ '05'
+    '05'
 else if((vars.createdAtList[vars.counter -1][4 to 6] == 'Jun'))
-    vars.month ++ '06'
+    '06'
 else if((vars.createdAtList[vars.counter -1][4 to 6] == 'Jul'))
-    vars.month ++ '07'
+    '07'
 else if((vars.createdAtList[vars.counter -1][4 to 6] == 'Aug'))
-    vars.month ++ '08'
+    '08'
 else if((vars.createdAtList[vars.counter -1][4 to 6] == 'Sep'))
-    vars.month ++ '09'
+    '09'
 else if((vars.createdAtList[vars.counter -1][4 to 6] == 'Oct'))
-    vars.month ++ '10'
+    '10'
 else if((vars.createdAtList[vars.counter -1][4 to 6] == 'Nov'))
-    vars.month ++ '11'
+    '11'
 else if((vars.createdAtList[vars.counter -1][4 to 6] == 'Dec'))
-    vars.month ++ '12'
+    '12'
 else
-    month ++ "month not found")]]></ee:set-variable>
+    "month not found")]]></ee:set-variable>
+					<ee:set-variable variableName="difference"><![CDATA[%dw 2.0
+output application/json
+---
+(vars.time[11 to 18] as LocalTime ) - (vars.createdAtList[vars.counter - 1][11 to 18] as LocalTime)]]></ee:set-variable>
+					<ee:set-variable variableName="splitCreatedDate"><![CDATA[%dw 2.0
+output application/json
+---
+vars.createdAtList[vars.counter - 1] splitBy(/\s/)]]></ee:set-variable>
+					<ee:set-variable variableName="yearBool"><![CDATA[%dw 2.0
+output application/json
+---
+vars.time[0 to 3] == vars.createdAtList[vars.counter - 1][26 to 29]]]></ee:set-variable>
+					<ee:set-variable variableName="dayBool"><![CDATA[%dw 2.0
+output application/json
+---
+vars.time[8 to 9] == vars.createdAtList[vars.counter - 1][8 to 9]]]></ee:set-variable>
 				</ee:variables>
 			</ee:transform>
-			<choice doc:name="Choice" doc:id="71dbc879-c4dc-4e55-ab2b-79e28af3eda4" >
-				<when expression="#[(vars.time[0 to 3] == vars.createdAtList[vars.counter - 1][26 to 29]) and (vars.time[8 to 9] == vars.createdAtList[vars.counter - 1][8 to 9])]">
-					<ee:transform doc:name="create array of objects" doc:id="52d8340d-8ec6-4844-8f81-b45a0bce8758">
+		<ee:transform doc:name="month bool" doc:id="027095fb-1d8b-4939-9a1a-888453199d7d">
+			<ee:message>
+			</ee:message>
+				<ee:variables>
+					<ee:set-variable variableName="splitDifference"><![CDATA[%dw 2.0
+output application/json
+---
+vars.difference replace /.-/ with (" ")]]></ee:set-variable>
+					<ee:set-variable variableName="monthBool"><![CDATA[%dw 2.0
+output application/java
+---
+vars.time[5 to 6] == vars.month]]></ee:set-variable>
+				</ee:variables>
+		</ee:transform>
+		<ee:transform doc:name="split time" doc:id="3d40a0a7-aed0-41a2-b485-8b966feaf4de">
+				<ee:message>
+				</ee:message>
+				<ee:variables>
+					<ee:set-variable variableName="splitDifferenceSpace"><![CDATA[%dw 2.0
+output application/java
+---
+vars.splitDifference splitBy(/\s/)]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+		<ee:transform doc:name="calculate difference of time" doc:id="2f7c0eb7-1e94-4757-9c9a-6fe3d1b02e67">
+				<ee:message>
+				</ee:message>
+				<ee:variables>
+					<ee:set-variable variableName="dateTimeBool"><![CDATA[%dw 2.0
+output application/json
+---
+(vars.yearBool == true) and (vars.monthBool == true) and (vars.dayBool == true)]]></ee:set-variable>
+					<ee:set-variable variableName="differHour"><![CDATA[%dw 2.0
+output application/json
+---
+(vars.splitDifferenceSpace[1] as Number)]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+		<logger level="DEBUG" doc:name="Logger" doc:id="1830ec0b-84a1-4849-ac71-7cb2a600a352" message="#[payload]"/>
+		<choice doc:name="check if tweet creation time is acceptable" doc:id="71dbc879-c4dc-4e55-ab2b-79e28af3eda4">
+				<when expression="#[(vars.dateTimeBool == true) and (vars.differHour &lt; vars.numHours)]">
+					<logger level="INFO" doc:name="Logger" doc:id="e217ae6c-227a-41ac-900f-8871ae98d635" />
+				<ee:transform doc:name="create array of objects" doc:id="52d8340d-8ec6-4844-8f81-b45a0bce8758">
 				<ee:message>
 				</ee:message>
 				<ee:variables>
@@ -160,17 +217,15 @@ vars.tweetList << {text: vars.textList[vars.counter - 1], url: vars.urlList[vars
 				</ee:variables>
 			</ee:transform>
 				</when>
-				<otherwise >
-					<logger level="INFO" doc:name="tweet exceeds the time restraint" doc:id="e3fe41d3-216e-4f50-b0e2-1d6fb0eca755" message="tweet exceeds the time restraint and will not be reported"/>
+				<otherwise>
+					<logger level="INFO" doc:name="tweet exceeds the time restraint" doc:id="e3fe41d3-216e-4f50-b0e2-1d6fb0eca755" message="tweet exceeds the time restraint and will not be reported" />
 				</otherwise>
 			</choice>
-		</foreach>
-		<set-payload value="#[vars.tweetList]" doc:name="vars.tweetList" doc:id="c75653cf-4b35-4c3f-9e70-8bc339223920" />
-		<logger level="INFO" doc:name="Logger" doc:id="f4ce0f29-d3ef-4c3a-9a30-a7e07cb6a170" />
+		<logger level="INFO" doc:name="Logger" doc:id="c4aaaa10-d6b9-403d-9ece-e1bce9ad08ce" />
 	</flow>
 	<flow name="retrieve-hashtags-by-populatiry" doc:id="442f6a0f-effb-42c3-a78e-f89c1914a3b3" >
-		<logger level="INFO" doc:name="Logger" doc:id="e227f1d2-6ca7-4ca9-bf7b-92b6d1f09fb1" />
-		<ee:transform doc:name="set queryparams to vars" doc:id="e7720838-c345-48cc-8b7d-9085c2e3d5e8">
+		<logger level="INFO" doc:name="Logger" doc:id="e227f1d2-6ca7-4ca9-bf7b-92b6d1f09fb1" message='#["starting hashtag flow at " ++  now()]'/>
+		<ee:transform doc:name="store queryparams and initialize api vars" doc:id="e7720838-c345-48cc-8b7d-9085c2e3d5e8">
 			<ee:message />
 			<ee:variables>
 				<ee:set-variable variableName="keyword"><![CDATA[%dw 2.0
@@ -193,14 +248,6 @@ p('https.twitter.api.returnCount')]]></ee:set-variable>
 output application/json
 ---
 []]]></ee:set-variable>
-				<ee:set-variable variableName="countX" ><![CDATA[%dw 2.0
-output application/java
----
-0]]></ee:set-variable>
-				<ee:set-variable variableName="countY" ><![CDATA[%dw 2.0
-output application/java
----
-0]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
 		<http:request method="GET" doc:name="twitter search request" doc:id="a4a93852-5c1e-4df4-a3bc-534d64a9630d" outputMimeType="application/json" config-ref="httpTwitterRequestConfiguration" path="${https.twitter.searchPath}">
@@ -217,6 +264,7 @@ output application/java
 	"result_type" : vars.resultType
 }]]]></http:query-params>
 		</http:request>
+		<logger level="DEBUG" doc:name="Logger" doc:id="7f3ab382-c738-4b9b-84b5-10ae01899551" message="#[payload]"/>
 		<foreach doc:name="For Each" doc:id="50a4a67e-49d0-4635-bb67-de2ea8f5745b" collection="payload[0]">
 			<foreach doc:name="For Each" doc:id="8403d6b5-2e3c-4aa0-83fd-58823fa139a6" collection="payload.entities.hashtags">
 				<ee:transform doc:name="add hashtag to list" doc:id="bbf83721-322d-45cd-9c58-cd5144149233">
@@ -232,7 +280,9 @@ else
     vars.hashtagList << payload.text )]]></ee:set-variable>
 					</ee:variables>
 		</ee:transform>
+				<logger level="DEBUG" doc:name="Logger" doc:id="487ef663-c7e6-40f0-973e-35e856c0bb55" message="#[payload]"/>
 			</foreach>
+			<logger level="DEBUG" doc:name="Logger" doc:id="43c92486-5da5-4c45-b641-bbfc057fb0a8" message="#[payload]"/>
 		</foreach>
 		<ee:transform doc:name="remove duplicate hashtags" doc:id="f6e070f3-2e8b-423b-abb0-7620867a918c">
 			<ee:message>
@@ -245,6 +295,6 @@ vars.hashtagList distinctBy (value) -> { "unique" : value }]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
 		<set-payload value="#[vars.hashtagList]" doc:name="vars.hashtagList" doc:id="890aa166-f32b-48ce-a031-6d068be4e943" />
-		<logger level="INFO" doc:name="Logger" doc:id="8b7e2f7a-9dee-462e-9edc-ffd4c75e413b" />
+		<logger level="INFO" doc:name="Logger" doc:id="8b7e2f7a-9dee-462e-9edc-ffd4c75e413b" message='#["ending hashtag flow at " ++  now()]'/>
 	</flow>
 </mule>
