@@ -43,6 +43,18 @@ output application/json
 output application/json
 ---
 []]]></ee:set-variable>
+				<ee:set-variable variableName="createdAtList" ><![CDATA[%dw 2.0
+output application/json
+---
+[]]]></ee:set-variable>
+				<ee:set-variable variableName="time" ><![CDATA[%dw 2.0
+output application/java
+---
+now()]]></ee:set-variable>
+				<ee:set-variable variableName="month" ><![CDATA[%dw 2.0
+output application/json
+---
+""]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
 		<http:request method="GET" doc:name="twitter search request" doc:id="07d522dc-ef9b-46a0-a0b0-522f448c79ed" outputMimeType="application/json" config-ref="httpTwitterRequestConfiguration" path="${https.twitter.searchPath}">
@@ -92,20 +104,66 @@ vars.textList << payload.text]]></ee:set-variable>
 output application/json
 ---
 vars.screennameList << payload.user.screen_name]]></ee:set-variable>
+					<ee:set-variable variableName="createdAtList" ><![CDATA[%dw 2.0
+output application/json
+---
+vars.createdAtList << payload.created_at]]></ee:set-variable>
 				</ee:variables>
 			</ee:transform>
 		</foreach>
 		<foreach doc:name="For Each" doc:id="a3702ac8-6aae-4d42-801f-6333c458deda" collection="#[vars.textList]">
-			<ee:transform doc:name="create array of objects" doc:id="52d8340d-8ec6-4844-8f81-b45a0bce8758" >
+			<ee:transform doc:name="Transform Message" doc:id="c8c7caa7-70cb-4706-adb6-e8ecd81b61af" >
 				<ee:message >
 				</ee:message>
 				<ee:variables >
-					<ee:set-variable variableName="tweetList" ><![CDATA[%dw 2.0
+					<ee:set-variable variableName="month" ><![CDATA[%dw 2.0
+output application/json
+---
+(if(vars.createdAtList[vars.counter -1][4 to 6] == 'Jan')
+    vars.month ++ '01'
+else if((vars.createdAtList[vars.counter -1][4 to 6] == 'Feb'))
+    vars.month ++ '02'
+else if((vars.createdAtList[vars.counter -1][4 to 6] == 'Mar'))
+    vars.month ++ '03'
+else if((vars.createdAtList[vars.counter -1][4 to 6] == 'Apr'))
+    vars.month ++ '04'
+else if((vars.createdAtList[vars.counter -1][4 to 6] == 'May'))
+    vars.month ++ '05'
+else if((vars.createdAtList[vars.counter -1][4 to 6] == 'Jun'))
+    vars.month ++ '06'
+else if((vars.createdAtList[vars.counter -1][4 to 6] == 'Jul'))
+    vars.month ++ '07'
+else if((vars.createdAtList[vars.counter -1][4 to 6] == 'Aug'))
+    vars.month ++ '08'
+else if((vars.createdAtList[vars.counter -1][4 to 6] == 'Sep'))
+    vars.month ++ '09'
+else if((vars.createdAtList[vars.counter -1][4 to 6] == 'Oct'))
+    vars.month ++ '10'
+else if((vars.createdAtList[vars.counter -1][4 to 6] == 'Nov'))
+    vars.month ++ '11'
+else if((vars.createdAtList[vars.counter -1][4 to 6] == 'Dec'))
+    vars.month ++ '12'
+else
+    month ++ "month not found")]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<choice doc:name="Choice" doc:id="71dbc879-c4dc-4e55-ab2b-79e28af3eda4" >
+				<when expression="#[(vars.time[0 to 3] == vars.createdAtList[vars.counter - 1][26 to 29]) and (vars.time[8 to 9] == vars.createdAtList[vars.counter - 1][8 to 9])]">
+					<ee:transform doc:name="create array of objects" doc:id="52d8340d-8ec6-4844-8f81-b45a0bce8758">
+				<ee:message>
+				</ee:message>
+				<ee:variables>
+					<ee:set-variable variableName="tweetList"><![CDATA[%dw 2.0
 output application/json
 ---
 vars.tweetList << {text: vars.textList[vars.counter - 1], url: vars.urlList[vars.counter - 1], screen_name: vars.screennameList[vars.counter - 1]}]]></ee:set-variable>
 				</ee:variables>
 			</ee:transform>
+				</when>
+				<otherwise >
+					<logger level="INFO" doc:name="tweet exceeds the time restraint" doc:id="e3fe41d3-216e-4f50-b0e2-1d6fb0eca755" message="tweet exceeds the time restraint and will not be reported"/>
+				</otherwise>
+			</choice>
 		</foreach>
 		<set-payload value="#[vars.tweetList]" doc:name="vars.tweetList" doc:id="c75653cf-4b35-4c3f-9e70-8bc339223920" />
 		<logger level="INFO" doc:name="Logger" doc:id="f4ce0f29-d3ef-4c3a-9a30-a7e07cb6a170" />
