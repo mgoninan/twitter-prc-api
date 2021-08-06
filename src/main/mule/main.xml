@@ -89,7 +89,7 @@ else if((payload.entities.media.url == null) and (payload.entities.urls.url[0] !
 else if((payload.entities.media.url != null) and (payload.entities.urls.url[0] != null) )
     vars.urlList << payload.entities.urls.url[0]
 else
-    vars.urlList << "no url available for this tweet" )   ]]></ee:set-variable>
+    vars.urlList << "" )   ]]></ee:set-variable>
 					<ee:set-variable variableName="textList" ><![CDATA[%dw 2.0
 output application/json
 ---
