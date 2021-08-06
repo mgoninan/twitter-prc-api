@@ -265,36 +265,43 @@ output application/json
 }]]]></http:query-params>
 		</http:request>
 		<logger level="DEBUG" doc:name="Logger" doc:id="7f3ab382-c738-4b9b-84b5-10ae01899551" message="#[payload]"/>
-		<foreach doc:name="For Each" doc:id="50a4a67e-49d0-4635-bb67-de2ea8f5745b" collection="payload[0]">
-			<foreach doc:name="For Each" doc:id="8403d6b5-2e3c-4aa0-83fd-58823fa139a6" collection="payload.entities.hashtags">
-				<ee:transform doc:name="add hashtag to list" doc:id="bbf83721-322d-45cd-9c58-cd5144149233">
-			<ee:message>
-			</ee:message>
-					<ee:variables >
-						<ee:set-variable variableName="hashtagList" ><![CDATA[%dw 2.0
+		<ee:transform doc:name="grab hashtags" doc:id="21f75f07-d2c2-4378-8157-abe779e3994a" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
 ---
-(if(payload.text == null)
-    vars.hashtagList
-else 
-    vars.hashtagList << payload.text )]]></ee:set-variable>
-					</ee:variables>
-		</ee:transform>
-				<logger level="DEBUG" doc:name="Logger" doc:id="487ef663-c7e6-40f0-973e-35e856c0bb55" message="#[payload]"/>
-			</foreach>
-			<logger level="DEBUG" doc:name="Logger" doc:id="43c92486-5da5-4c45-b641-bbfc057fb0a8" message="#[payload]"/>
-		</foreach>
-		<ee:transform doc:name="remove duplicate hashtags" doc:id="f6e070f3-2e8b-423b-abb0-7620867a918c">
-			<ee:message>
+flatten(payload.statuses.entities.hashtags).text distinctBy ((value) -> value ) default []]]></ee:set-payload>
 			</ee:message>
-			<ee:variables >
-				<ee:set-variable variableName="hashtagList" ><![CDATA[%dw 2.0
-output application/json
----
-vars.hashtagList distinctBy (value) -> { "unique" : value }]]></ee:set-variable>
-			</ee:variables>
 		</ee:transform>
-		<set-payload value="#[vars.hashtagList]" doc:name="vars.hashtagList" doc:id="890aa166-f32b-48ce-a031-6d068be4e943" />
+<!-- 		<foreach doc:name="For Each" doc:id="50a4a67e-49d0-4635-bb67-de2ea8f5745b" collection="payload[0]"> -->
+<!-- 			<foreach doc:name="For Each" doc:id="8403d6b5-2e3c-4aa0-83fd-58823fa139a6" collection="payload.entities.hashtags"> -->
+<!-- 				<ee:transform doc:name="add hashtag to list" doc:id="bbf83721-322d-45cd-9c58-cd5144149233"> -->
+<!-- 			<ee:message> -->
+<!-- 			</ee:message> -->
+<!-- 					<ee:variables > -->
+<!-- 						<ee:set-variable variableName="hashtagList" ><![CDATA[%dw 2.0 -->
+<!-- output application/json -->
+<!-- -&#45;&#45; -->
+<!-- (if(payload.text == null) -->
+<!--     vars.hashtagList -->
+<!-- else  -->
+<!--     vars.hashtagList << payload.text )]]></ee:set-variable> -->
+<!-- 					</ee:variables> -->
+<!-- 		</ee:transform> -->
+<!-- 				<logger level="DEBUG" doc:name="Logger" doc:id="487ef663-c7e6-40f0-973e-35e856c0bb55" message="#[payload]"/> -->
+<!-- 			</foreach> -->
+<!-- 			<logger level="DEBUG" doc:name="Logger" doc:id="43c92486-5da5-4c45-b641-bbfc057fb0a8" message="#[payload]"/> -->
+<!-- 		</foreach> -->
+<!-- 		<ee:transform doc:name="remove duplicate hashtags" doc:id="f6e070f3-2e8b-423b-abb0-7620867a918c"> -->
+<!-- 			<ee:message> -->
+<!-- 			</ee:message> -->
+<!-- 			<ee:variables > -->
+<!-- 				<ee:set-variable variableName="hashtagList" ><![CDATA[%dw 2.0 -->
+<!-- output application/json -->
+<!-- -&#45;&#45; -->
+<!-- vars.hashtagList distinctBy (value) -> { "unique" : value }]]></ee:set-variable> -->
+<!-- 			</ee:variables> -->
+<!-- 		</ee:transform> -->
 		<logger level="INFO" doc:name="Logger" doc:id="8b7e2f7a-9dee-462e-9edc-ffd4c75e413b" message='#["ending hashtag flow at " ++  now()]'/>
 	</flow>
 </mule>
