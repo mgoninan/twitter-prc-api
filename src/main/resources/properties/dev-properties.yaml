@@ -1,4 +1,5 @@
 api:
+  path: "/api/*"
   id: ""
   
 tls.keystore:

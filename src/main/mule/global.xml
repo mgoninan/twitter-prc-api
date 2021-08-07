@@ -16,5 +16,11 @@
     <secure-properties:config name="securePropertiesConfig" doc:name="Secure Properties Config" doc:id="2f95aaab-e9cb-4cd7-b0d4-b201ebf78e89" file="properties/${env}-secure-properties.yaml" key="${encrypt.key}">
         <secure-properties:encrypt algorithm="Blowfish" />
     </secure-properties:config>
-    <apikit:config name="apiConfig" api="twitter-prc-api.raml" outboundHeadersMapName="outboundHeadersMapName" httpStatusVarName="httpStatus" />
+    <apikit:config name="apiConfig" api="twitter-prc-api.raml" outboundHeadersMapName="outboundHeadersMapName" httpStatusVarName="httpStatus" >
+		<apikit:flow-mappings >
+			<apikit:flow-mapping resource="/tweets" action="get" flow-ref="get:\tweets:apiConfig" />
+			<apikit:flow-mapping resource="/hashtags" action="get" flow-ref="get:\hashtags:apiConfig" />
+		</apikit:flow-mappings>
+	</apikit:config>
+	<configuration doc:name="Configuration" doc:id="65b32ffe-83cc-4b0b-af4c-a1e72a2ca855" defaultErrorHandler-ref="api-error-handler" />
 </mule>

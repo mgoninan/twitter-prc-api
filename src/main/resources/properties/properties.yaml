@@ -19,6 +19,4 @@ https:
     api:
       maxCount: "10"
       returnCount: "10"
-      keyword: "apples"
-      numHours: "5"
       resultType: "popular"

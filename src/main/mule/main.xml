@@ -75,19 +75,6 @@ output application/json
 		<ee:transform doc:name="Copy_of_capture tweet info" doc:id="98a921cc-0daf-4b8e-9666-c23c49ec3d3b">
 			<ee:message />
 			<ee:variables>
-				<ee:set-variable variableName="urlList"><![CDATA[%dw 2.0
-output application/json
----
-(if((payload.entities.urls == []) and (payload.entities.media.url == null) and (payload.retweeted_status.entities.urls.url[0] !=null) )
-    vars.urlList << payload.retweeted_status.entities.urls.url[0] 
-else if((payload.entities.urls == []) and (payload.entities.media.url !=null) )
-    vars.urlList << payload.entities.media.url[0]
-else if((payload.entities.media.url == null) and (payload.entities.urls.url[0] != null) )
-    vars.urlList << payload.entities.urls.url[0]
-else if((payload.entities.media.url != null) and (payload.entities.urls.url[0] != null) )
-    vars.urlList << payload.entities.urls.url[0]
-else
-    vars.urlList << "" )   ]]></ee:set-variable>
 				<ee:set-variable variableName="textList"><![CDATA[%dw 2.0
 output application/json
 ---
@@ -110,31 +97,12 @@ flatten(payload.statuses.created_at)]]></ee:set-variable>
 					<ee:set-variable variableName="urlList" ><![CDATA[%dw 2.0
 output application/json
 ---
-
-flatten(payload.statuses.entities.urls).url
-
-//(if((payload.entities.urls == []) and (payload.entities.media.url == null) and (payload.retweeted_status.entities.urls.url[0] !=null) )
-//    vars.urlList << payload.retweeted_status.entities.urls.url[0] 
-//else if((payload.entities.urls == []) and (payload.entities.media.url !=null) )
-//    vars.urlList << payload.entities.media.url[0]
-//else if((payload.entities.media.url == null) and (payload.entities.urls.url[0] != null) )
-//    vars.urlList << payload.entities.urls.url[0]
-//else if((payload.entities.media.url != null) and (payload.entities.urls.url[0] != null) )
-//    vars.urlList << payload.entities.urls.url[0]
-//else
-//    vars.urlList << "" )   ]]></ee:set-variable>
-					<ee:set-variable variableName="textList" ><![CDATA[%dw 2.0
-output application/json
----
-vars.textList << payload.text]]></ee:set-variable>
-					<ee:set-variable variableName="screennameList" ><![CDATA[%dw 2.0
-output application/json
----
-vars.screennameList << payload.user.screen_name]]></ee:set-variable>
-					<ee:set-variable variableName="createdAtList" ><![CDATA[%dw 2.0
-output application/json
----
-vars.createdAtList << payload.created_at]]></ee:set-variable>
+(if((payload.entities.urls == []) and (payload.retweeted_status.entities.urls.url[0] != null) )
+    vars.urlList << payload.retweeted_status.entities.urls.url[0] 
+else if((payload.entities.urls != []) and (payload.retweeted_status.entities.urls.url[0] == null) )
+    vars.urlList << payload.entities.urls.url[0]
+else
+    vars.urlList << "" ) ]]></ee:set-variable>
 				</ee:variables>
 			</ee:transform>
 		</foreach>
