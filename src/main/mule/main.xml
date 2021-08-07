@@ -72,7 +72,7 @@ output application/json
 		</http:request>
 		<logger level="INFO" doc:name="Logger" doc:id="2a3e2496-8800-4595-8513-6a3a3552d2cf" />
 		<set-variable value="#[payload]" doc:name="capture original search payload" doc:id="3b6a6f79-7817-4e5a-abbb-1509402cb780" variableName="tweetInfoList"/>
-		<ee:transform doc:name="Copy_of_capture tweet info" doc:id="98a921cc-0daf-4b8e-9666-c23c49ec3d3b">
+		<ee:transform doc:name="capture tweet data" doc:id="98a921cc-0daf-4b8e-9666-c23c49ec3d3b">
 			<ee:message />
 			<ee:variables>
 				<ee:set-variable variableName="textList"><![CDATA[%dw 2.0
@@ -90,7 +90,7 @@ flatten(payload.statuses.created_at)]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
 		<foreach doc:name="For Each" doc:id="2ce6f594-ab9b-4875-83d3-83e3cbf354c4" collection="#[payload[0]]">
-			<ee:transform doc:name="capture tweet info" doc:id="a6195bc9-c02a-44b9-8787-e9ac64d3d312">
+			<ee:transform doc:name="capture urls" doc:id="a6195bc9-c02a-44b9-8787-e9ac64d3d312">
 				<ee:message>
 				</ee:message>
 				<ee:variables >

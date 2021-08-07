@@ -8,38 +8,31 @@ protocols:
   - HTTPS
 
 securitySchemes:
-  SecurityScheme:
-    type: Basic Authentication
+  oauth_2.0: !include /exchange_modules/68ef9520-24e9-4cf2-b2f5-620025690913/training-oauth20-security-scheme/1.0.2/OAuth2.raml
 
-securedBy: SecurityScheme 
-    
+securedBy: [oauth_2.0]
+
 /tweets:
   description: retrieves a list of tweets (max 10) that contain a key word in the last numhours
   get:
     queryParameters:
       keyword:
-        example: Example
+        description: the string the api will search for in tweets
+        example: apple
         type: string
         required: true
       numHours:
+        description: this restricts the time frame of tweets to be returned by the number of hours since its creation
         example: 2
         type: number
+        maximum: 24
+        minimum: 1
         required: true
       count:
+        description: the number of tweets to pull from twitter's api
         example: 10
         type: number
-        enum:
-          - 0
-          - 1
-          - 2
-          - 3
-          - 4
-          - 5
-          - 6
-          - 7
-          - 8
-          - 9
-          - 10
+        maximum: 10
         required: false
     responses:
       200: 
@@ -54,7 +47,8 @@ securedBy: SecurityScheme
   get:
     queryParameters:
       keyword:
-        example: Example
+        description: the string the api will search for in tweets
+        example: apple
         type: string
         required: true
     responses:

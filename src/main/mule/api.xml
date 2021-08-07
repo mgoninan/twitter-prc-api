@@ -25,7 +25,7 @@
     <flow name="get:\tweets:apiConfig">
         <flow-ref doc:name="retrieve-list-by-keyword" doc:id="95a303b8-a90e-478c-a7ba-cd8ae3336d94" name="retrieve-list-by-keyword" />
     </flow>
-	<flow name="get:\hashtags:apiConfig">
-		<flow-ref doc:name="retrieve-hashtags-by-populatiry" doc:id="416ad5ca-e31a-4050-9389-896dfcb902af" name="retrieve-hashtags-by-populatiry" />
+    <flow name="get:\hashtags:apiConfig">
+        <flow-ref doc:name="retrieve-hashtags-by-populatiry" doc:id="416ad5ca-e31a-4050-9389-896dfcb902af" name="retrieve-hashtags-by-populatiry" />
     </flow>
 </mule>
