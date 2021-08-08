@@ -48,4 +48,6 @@ type: string]]></types:shape>
   </types:enrichment>
   <types:enrichment select="#e7720838-c345-48cc-8b7d-9085c2e3d5e8"/>
   <types:enrichment select="#98a921cc-0daf-4b8e-9666-c23c49ec3d3b"/>
+  <types:enrichment select="#068237bc-bcdc-482a-bc52-9e2df26bb906"/>
+  <types:enrichment select="#e488ec6c-78b9-461e-a893-4a9a25e07fc2"/>
 </types:mule>
