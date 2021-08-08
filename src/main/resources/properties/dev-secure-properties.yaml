@@ -1,4 +1,7 @@
 tls.keystore:
   password: "![c72bREVng+8ns4IMHA/S2Q==]"
   keyPassword: "![c72bREVng+8ns4IMHA/S2Q==]"
- 
+
+https:
+  twitter:
+    token: "![+hc83+twVobRw9e8NkHdS/eAKcrDV+EVnrJFKZefbEleibe3D/QwPMB2K8qagYYD3oj7giDctjUV8HmGf2N/xPqlPDo6N0jwm9qP4L/mRKaJtgRlh01nVm9NJhQnkPklvbwp4wpJ5Njb5GrlcUpphsXO9iILwzCj]"

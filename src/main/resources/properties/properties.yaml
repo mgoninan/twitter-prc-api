@@ -15,7 +15,6 @@ https:
     host: "api.twitter.com"
     basePath: "/"
     searchPath: "/1.1/search/tweets.json"
-    token: "Bearer AAAAAAAAAAAAAAAAAAAAAI4OHgEAAAAAlbk0HSIAqcc3havrrU9j2NeAQ34%3DzJmzwHuQerd8JJ2TeuHfqwKgBt6bK4tk93w3ocBB2vPuKMF3cG"
     api:
       tweetBaseUrl: "https://twitter.com/i/web/status/"
       maxCount: "10"

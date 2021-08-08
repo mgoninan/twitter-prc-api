@@ -1,0 +1,185 @@
+{
+	"info": {
+		"_postman_id": "36f51deb-42b8-40bf-82f8-72f9f31dac6d",
+		"name": "twitter-prc-api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "local health",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:8082/health",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"health"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "local retrieveList",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://localhost:8082/api/tweets?keyword=apple&numHours=24&count=8",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"api",
+						"tweets"
+					],
+					"query": [
+						{
+							"key": "keyword",
+							"value": "apple"
+						},
+						{
+							"key": "numHours",
+							"value": "24"
+						},
+						{
+							"key": "count",
+							"value": "8"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "local retrieveHashtags",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://localhost:8082/api/hashtags?keyword=",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"api",
+						"hashtags"
+					],
+					"query": [
+						{
+							"key": "keyword",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "cloudhub tweets",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://twitter-prc.us-e2.cloudhub.io/api/tweets?keyword=apple&numHours=72&count=5",
+					"protocol": "https",
+					"host": [
+						"twitter-prc",
+						"us-e2",
+						"cloudhub",
+						"io"
+					],
+					"path": [
+						"api",
+						"tweets"
+					],
+					"query": [
+						{
+							"key": "keyword",
+							"value": "apple"
+						},
+						{
+							"key": "numHours",
+							"value": "72"
+						},
+						{
+							"key": "count",
+							"value": "5"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "cloudhub hashtags",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://twitter-prc.us-e2.cloudhub.io/api/hashtags?keyword=apple",
+					"protocol": "https",
+					"host": [
+						"twitter-prc",
+						"us-e2",
+						"cloudhub",
+						"io"
+					],
+					"path": [
+						"api",
+						"hashtags"
+					],
+					"query": [
+						{
+							"key": "keyword",
+							"value": "apple"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "cloudhub ready&alive",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://twitter-prc.us-e2.cloudhub.io/ready",
+					"protocol": "https",
+					"host": [
+						"twitter-prc",
+						"us-e2",
+						"cloudhub",
+						"io"
+					],
+					"path": [
+						"ready"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
