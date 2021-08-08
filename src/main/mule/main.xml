@@ -22,7 +22,7 @@ attributes.queryParams.numHours as Number]]></ee:set-variable>
 				<ee:set-variable variableName="token" ><![CDATA[%dw 2.0
 output application/json
 ---
-p('https.twitter.token')]]></ee:set-variable>
+p('secure::https.twitter.token')]]></ee:set-variable>
 				<ee:set-variable variableName="returnCount" ><![CDATA[%dw 2.0
 output application/json
 ---
@@ -55,6 +55,10 @@ now()]]></ee:set-variable>
 output application/json
 ---
 ""]]></ee:set-variable>
+				<ee:set-variable variableName="resultType" ><![CDATA[%dw 2.0
+output application/json
+---
+p('https.twitter.api.resultType.recent')]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
 		<http:request method="GET" doc:name="twitter search request" doc:id="07d522dc-ef9b-46a0-a0b0-522f448c79ed" outputMimeType="application/json" config-ref="httpTwitterRequestConfiguration" path="${https.twitter.searchPath}">
@@ -68,7 +72,7 @@ output application/json
 {
 	"q" : vars.keyword,
 	"count" : vars.returnCount,
-	"result_type" : vars.resultType.recent
+	"result_type" : vars.resultType
 }]]]></http:query-params>
 		</http:request>
 		<logger level="DEBUG" doc:name="Logger" doc:id="2a3e2496-8800-4595-8513-6a3a3552d2cf" message='#["after twitter http request" ++ payload]'/>
@@ -293,11 +297,11 @@ attributes.queryParams.keyword]]></ee:set-variable>
 				<ee:set-variable variableName="token" ><![CDATA[%dw 2.0
 output application/json
 ---
-p('https.twitter.token')]]></ee:set-variable>
+p('secure::https.twitter.token')]]></ee:set-variable>
 				<ee:set-variable variableName="resultType" ><![CDATA[%dw 2.0
 output application/json
 ---
-p('https.twitter.api.resultType')]]></ee:set-variable>
+p('https.twitter.api.resultType.popular')]]></ee:set-variable>
 				<ee:set-variable variableName="returnCount" ><![CDATA[%dw 2.0
 output application/json
 ---
@@ -319,7 +323,7 @@ output application/json
 {
 	"q" : vars.keyword,
 	"count" : vars.returnCount,
-	"result_type" : vars.resultType.popular
+	"result_type" : vars.resultType
 }]]]></http:query-params>
 		</http:request>
 		<logger level="DEBUG" doc:name="Logger" doc:id="7f3ab382-c738-4b9b-84b5-10ae01899551" message="#[payload]"/>
