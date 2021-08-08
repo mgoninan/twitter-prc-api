@@ -4,7 +4,7 @@
 
 This API integrates with Twitter's API and is capable of performing some analysis on recent tweets.
 
-###Technical Details
+### Technical Details
 
 Mule 4.3.0 cloudhub application
 
@@ -14,6 +14,7 @@ Link to Twitter's API documentation: https://developer.twitter.com/en/docs/twitt
 
 ### Security
 
+Oauth 2
 
 ### Contacts
 
