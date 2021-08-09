@@ -4,6 +4,7 @@ api:
   version: "${api.version}"
   majorVersion: "v1"
   port: "8082"
+  path: "/${env}/api/*"
   
 app:
   name: "${project.artifactId}"

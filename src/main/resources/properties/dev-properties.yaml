@@ -1,11 +1,7 @@
 api:
-  path: "/api/*"
-  id: ""
+  id: "17139496"
   
 tls.keystore:
   type: "pkcs12"
   path: "certs/twitter-prc-api-dev.p12"
   alias: "server"
- 
-logger:
-  prettyPrint: "true"
