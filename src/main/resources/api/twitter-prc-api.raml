@@ -8,6 +8,8 @@ protocols:
   - HTTPS
 
 securitySchemes:
+  securityShceme:
+    type: Basic Authentication
   oauth_2.0: !include /exchange_modules/68ef9520-24e9-4cf2-b2f5-620025690913/training-oauth20-security-scheme/1.0.2/OAuth2.raml
 
 securedBy: [oauth_2.0]
