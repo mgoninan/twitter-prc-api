@@ -14,7 +14,7 @@ Link to Twitter's API documentation: https://developer.twitter.com/en/docs/twitt
 
 ### Security
 
-Oauth 2
+Client Id Enforcement
 
 ### Contacts
 
